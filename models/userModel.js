@@ -11,12 +11,13 @@ const userSchema = new mongoose.Schema({
         required : true
     },
     easyCompletedChallenges : [{
-        type : mongoose.Types.ObjectId,
-        ref : 'easyChallenges'
-    }],
+            type: mongoose.Types.ObjectId,
+            ref: 'easyChallenges',
+
+        }],
     hardCompletedChallenges : [{
         type : mongoose.Types.ObjectId,
-        ref : 'hardChallenges'
+        ref : 'hardChallenges',
     }]
 
 });

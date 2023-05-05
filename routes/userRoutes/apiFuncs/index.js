@@ -1,4 +1,5 @@
 const userModel = require('../../../models/userModel')
+const easyChallengesModel = require('../../../models/easyChallengesModel')
 const userLogin = async (req, res) => {
     const { userName, password } = req?.query
     try {
@@ -49,7 +50,36 @@ const userSignUp = async (req, res) => {
     }
 };
 
+const addChallengeInUser = async (req,res)=> {
+    const {userId,challengeId} = req?.params
+    try {
+        // check if challenge is an easy or hard one
+        let easy = await easyChallengesModel.findOne({_id : challengeId})
+
+        let request = 
+        easy ? 
+        await userModel.updateOne(
+            {_id:userId},
+            {
+                $addToSet : {easyCompletedChallenges : challengeId}
+            }
+        ) 
+        :
+        await userModel.updateOne(
+            {_id:userId},
+            {
+                $addToSet : {hardCompletedChallenges : challengeId}
+            }
+        ) 
+        res.send(request);
+        } catch (error) {
+            res.send(error.message)
+            console.log(error)
+        }
+}
+
 module.exports = {
     userLogin,
-    userSignUp
+    userSignUp,
+    addChallengeInUser
 }
