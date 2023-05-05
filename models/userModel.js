@@ -10,14 +10,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required : true
     },
-    easyCompletedChallenges : {
+    easyCompletedChallenges : [{
         type : mongoose.Types.ObjectId,
         ref : 'easyChallenges'
-    },
-    hardCompletedChallenges : {
+    }],
+    hardCompletedChallenges : [{
         type : mongoose.Types.ObjectId,
         ref : 'hardChallenges'
-    }
+    }]
 
 });
 

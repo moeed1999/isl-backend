@@ -18,6 +18,8 @@ const userLogin = async (req, res) => {
             userName,
             password
         })
+        .populate('easyCompletedChallenges')
+        .populate('hardCompletedChallenges')
 
         // if there is no matched account
         if (!user) {
