@@ -10,15 +10,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         required : true
     },
-    easyCompletedChallenges : [{
-            type: mongoose.Types.ObjectId,
-            ref: 'easyChallenges',
-
+    easyCompletedChallenges : {
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'easyChallenges'
+          }],
+      },
+    hardCompletedChallenges : {
+        type: [{
+          type: mongoose.Types.ObjectId,
+          ref: 'hardChallenges'
         }],
-    hardCompletedChallenges : [{
-        type : mongoose.Types.ObjectId,
-        ref : 'hardChallenges',
-    }]
+      }
 
 });
 
