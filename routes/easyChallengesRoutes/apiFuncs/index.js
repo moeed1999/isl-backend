@@ -1,4 +1,5 @@
 const easyChallengesModel = require('../../../models/easyChallengesModel')
+const userModel = require('../../../models/userModel')
 const allEasyChallenges = async (req, res) => {
     try {
         let challenges = await easyChallengesModel.find({})
@@ -23,7 +24,23 @@ const createEasyChallenge = async (req,res) => {
         }
     }
 
+// get one easy challenge
+const getEasyChallenge = async (req, res) => {
+    const {userId} = req?.params
+    try {
+        let user =  await userModel.findOne({_id:userId})
+        let challenges = await easyChallengesModel.findOne({_id:{$nin : user?.easyCompletedChallenges}})
+        challenges ?
+        res.send(challenges)
+        :
+        res.send('all challenges completed.No more challenges for now.')
+    } catch (error) {
+        console.log(error)
+    }
+};
+
 module.exports = {
     allEasyChallenges,
-    createEasyChallenge
+    createEasyChallenge,
+    getEasyChallenge
 }

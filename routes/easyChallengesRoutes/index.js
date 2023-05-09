@@ -1,5 +1,5 @@
 const express = require('express');
-const {allEasyChallenges, createEasyChallenge} = require('./apiFuncs/index')
+const {allEasyChallenges, createEasyChallenge, getEasyChallenge} = require('./apiFuncs/index')
 
 
 const router = express.Router();
@@ -9,5 +9,8 @@ router.get('/allChallenges',allEasyChallenges)
 
 // create easy challenge
 router.post('/createEasyChallenge',createEasyChallenge)
+
+// get one easy challenge
+router.get('/challenge/:userId',getEasyChallenge)
 
 module.exports = router;

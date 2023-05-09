@@ -1,4 +1,5 @@
 const hardChallengesModel = require('../../../models/hardChallengesModel')
+const userModel = require('../../../models/userModel')
 const allHardChallenges = async (req, res) => {
     try {
         let challenges = await hardChallengesModel.find({})
@@ -10,7 +11,6 @@ const allHardChallenges = async (req, res) => {
 
 // create easy challenge
 const createHardChallenge = async (req,res) => {
-    console.log(req.body,'ooo')
         try {
             let request = new hardChallengesModel(req?.body);
             let result = await request.save();
@@ -24,7 +24,21 @@ const createHardChallenge = async (req,res) => {
         }
     }
 
+const getHardChallenge = async (req, res) => {
+    const {userId} = req?.params
+    try {
+        let user =  await userModel.findOne({_id:userId})
+        let challenges = await hardChallengesModel.findOne({_id:{$nin : user?.hardCompletedChallenges}})
+        challenges ?
+        res.send(challenges)
+        :
+        res.send('all challenges completed.No more challenges for now.')
+    } catch (error) {
+        console.log(error)
+    }
+};
 module.exports = {
     allHardChallenges,
-    createHardChallenge
+    createHardChallenge,
+    getHardChallenge
 }
