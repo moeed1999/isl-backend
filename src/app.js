@@ -1,8 +1,8 @@
-// require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: '../.env' });
 require('./connection')
 
 const express = require('express');
-
 
 const userRouter = require('../routes/userRoutes/index')
 const easyChallengesRouter = require('../routes/easyChallengesRoutes/index')
@@ -12,7 +12,7 @@ const app = express();
 
 // app.use(express.json());
 
-const PORT = 9003 || process.env.PORT;
+const PORT = process.env.PORT;
 
 // const router = new express.Router();
 
