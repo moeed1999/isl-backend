@@ -16,21 +16,22 @@ const userLogin = async (req, res) => {
             })
         }
 
+        // if password does not matches
+        let isPasswordMatch = userModel.comparePassword(password, userNameExists.password);
+
+        if (!isPasswordMatch)
+        return res.status(500).json({
+            success: false,
+            reason: "Password does not match",
+            message: "You could not be logged in",
+        });
+
         let user = await userModel.findOne({
-            userName,
-            password
+            userName
         })
         .populate('easyCompletedChallenges')
         .populate('hardCompletedChallenges')
 
-        // if there is no matched account
-        if (!user) {
-            return res.json({
-                success: 'false',
-                reason: "incorrect password",
-                message: "you could not be logged in"
-            })
-        }
         res.send(user)
     } catch (error) {
         console.log(error)
@@ -39,7 +40,8 @@ const userLogin = async (req, res) => {
 
 const userSignUp = async (req, res) => {
     try {
-        let request = new userModel(req?.body);
+        let password = userModel.encryptPassword(req?.body?.password)
+        let request = new userModel({...req?.body,password});
         let result = await request.save();
         res.send(result);
     } catch (e) {
