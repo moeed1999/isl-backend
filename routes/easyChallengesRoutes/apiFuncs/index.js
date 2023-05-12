@@ -26,9 +26,9 @@ const createEasyChallenge = async (req,res) => {
 
 // get one easy challenge
 const getEasyChallenge = async (req, res) => {
-    const {userId} = req?.params
+    const {_id} = req?.user
     try {
-        let user =  await userModel.findOne({_id:userId})
+        let user =  await userModel.findOne({_id})
         let challenges = await easyChallengesModel.findOne({_id:{$nin : user?.easyCompletedChallenges}})
         challenges ?
         res.send(challenges)

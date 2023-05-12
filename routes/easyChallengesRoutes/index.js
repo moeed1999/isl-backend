@@ -1,4 +1,5 @@
 const express = require('express');
+const auth = require('../../middlewares/auth');
 const {allEasyChallenges, createEasyChallenge, getEasyChallenge} = require('./apiFuncs/index')
 
 
@@ -11,6 +12,6 @@ router.get('/allChallenges',allEasyChallenges)
 router.post('/createEasyChallenge',createEasyChallenge)
 
 // get one easy challenge
-router.get('/challenge/:userId',getEasyChallenge)
+router.get('/challenge',auth(),getEasyChallenge)
 
 module.exports = router;

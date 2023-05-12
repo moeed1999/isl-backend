@@ -1,5 +1,12 @@
 const express = require('express');
-const {userLogin,userSignUp,addChallengeInUser} = require('./apiFuncs/index')
+const auth = require('../../middlewares/auth');
+const {
+    userLogin,
+    userSignUp,
+    addChallengeInUser,
+    userEasyChallenges,
+    userHardChallenges
+} = require('./apiFuncs/index')
 
 const router = express.Router();
 
@@ -10,6 +17,12 @@ router.get('/login',userLogin)
 router.post('/signUp',userSignUp)
 
 // add challenges in user
-router.put('/addChallenge/:userId/:challengeId',addChallengeInUser)
+router.put('/addChallenge/:challengeId',auth(),addChallengeInUser)
+
+// get all easy challenges of user
+router.get('/allEasyChallenges',auth(),userEasyChallenges)
+
+// get all hard challenges of user
+router.get('/allHardChallenges',auth(),userHardChallenges)
 
 module.exports = router;

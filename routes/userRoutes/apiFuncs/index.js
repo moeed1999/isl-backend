@@ -1,6 +1,8 @@
 const userModel = require('../../../models/userModel')
 const easyChallengesModel = require('../../../models/easyChallengesModel')
 const hardChallengesModel = require('../../../models/hardChallengesModel')
+const jwt = require('jsonwebtoken');
+require('dotenv').config({ path: '../../.env' });
 const userLogin = async (req, res) => {
     const { userName, password } = req?.query
     try {
@@ -26,13 +28,16 @@ const userLogin = async (req, res) => {
             message: "You could not be logged in",
         });
 
-        let user = await userModel.findOne({
-            userName
-        })
-        .populate('easyCompletedChallenges')
-        .populate('hardCompletedChallenges')
+        //creating token
+        const token = jwt.sign({userName}, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: '7d' // Token expires in 1 month
+          });
 
-        res.send(user)
+        res.send({
+            userName: userNameExists.userName,
+            token,
+            success: true
+        })
     } catch (error) {
         console.log(error)
     }
@@ -40,10 +45,28 @@ const userLogin = async (req, res) => {
 
 const userSignUp = async (req, res) => {
     try {
+
+        //encrypting password
         let password = userModel.encryptPassword(req?.body?.password)
+
+        //creating token
+        const token = jwt.sign({...req?.body,password}, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: '7d' // Token expires in 1 month
+          });
+
+        //creating data to save
         let request = new userModel({...req?.body,password});
-        let result = await request.save();
-        res.send(result);
+
+        //saving data
+        let user = await request.save();
+
+        //sending data
+        res.send({
+            userName:user.userName,
+            token,
+            success:true
+            });
+
     } catch (e) {
         res.json({
             error: e.code,
@@ -54,13 +77,12 @@ const userSignUp = async (req, res) => {
 };
 
 const addChallengeInUser = async (req,res)=> {
-    const {userId,challengeId} = req?.params
+    const {challengeId} = req?.params
+    const {_id:userId} = req?.user
     try {
         // checking if challenge is an easy or hard one
         let easy = await easyChallengesModel.findOne({_id : challengeId})
         let hard = await hardChallengesModel.findOne({_id : challengeId})
-
-       
 
         if(easy){
             // checking if id already exists
@@ -84,6 +106,7 @@ const addChallengeInUser = async (req,res)=> {
         }
         
         else if(hard){
+            // checking if id already exists
             const userChallenges = await userModel.findOne({_id :userId},{hardCompletedChallenges:1})
             const isIdUnique = userChallenges?.
                                hardCompletedChallenges?.
@@ -104,7 +127,7 @@ const addChallengeInUser = async (req,res)=> {
         }
        
         else {
-            res.send('no challenge with this id exists')
+            res.send('please enter a valid id')
         }
 
         } catch (error) {
@@ -113,8 +136,28 @@ const addChallengeInUser = async (req,res)=> {
         }
 }
 
+const userEasyChallenges = async (req, res) => {
+    const { _id: userId } = req?.user
+
+    const challenges = await userModel.findOne({ _id: userId }, { _id: 0, easyCompletedChallenges: 1 }).populate('easyCompletedChallenges')
+    
+    res.send(challenges)
+
+}
+
+const userHardChallenges = async (req, res) => {
+    const { _id: userId } = req?.user
+
+    const challenges = await userModel.findOne({ _id: userId }, { _id: 0, hardCompletedChallenges: 1 }).populate('hardCompletedChallenges')
+    
+    res.send(challenges)
+
+}
+
 module.exports = {
     userLogin,
     userSignUp,
-    addChallengeInUser
+    addChallengeInUser,
+    userEasyChallenges,
+    userHardChallenges
 }
