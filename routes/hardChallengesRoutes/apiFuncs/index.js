@@ -10,29 +10,29 @@ const allHardChallenges = async (req, res) => {
 };
 
 // create easy challenge
-const createHardChallenge = async (req,res) => {
-        try {
-            let request = new hardChallengesModel(req?.body);
-            let result = await request.save();
-            res.send(result);
-        } catch (e) {
-            res.json({
-                error: e.code,
-                message: e.message
-            });
-            console.log(e)
-        }
+const createHardChallenge = async (req, res) => {
+    try {
+        let request = new hardChallengesModel(req?.body);
+        let result = await request.save();
+        res.send(result);
+    } catch (e) {
+        res.json({
+            error: e.code,
+            message: e.message
+        });
+        console.log(e)
     }
+}
 
 const getHardChallenge = async (req, res) => {
-    const {userId} = req?.params
+    const { _id } = req?.user
     try {
-        let user =  await userModel.findOne({_id:userId})
-        let challenges = await hardChallengesModel.findOne({_id:{$nin : user?.hardCompletedChallenges}})
+        let user = await userModel.findOne({ _id })
+        let challenges = await hardChallengesModel.findOne({ _id: { $nin: user?.hardCompletedChallenges } })
         challenges ?
-        res.send(challenges)
-        :
-        res.send('all challenges completed.No more challenges for now.')
+            res.send(challenges)
+            :
+            res.send('all challenges completed.No more challenges for now.')
     } catch (error) {
         console.log(error)
     }
