@@ -1,27 +1,31 @@
 const mongoose = require('mongoose');
 
 const hardChallengesSchema = new mongoose.Schema({
-    titleEng : {
+    titleEng: {
         type: String,
-        required : true
+        required: true
     },
-    titleUrdu : {
+    titleUrdu: {
         type: String,
-        required : true
+        required: true
     },
-    reference : {
+    reference: {
         type: String,
-        required : true
+        required: true
     },
-    refUrdu : {
+    refUrdu: {
         type: String,
-        required : true
+        required: true
     },
-    refEnglish : {
+    refEnglish: {
         type: String,
-        required : true
+        required: true
+    },
+    date: {
+        type: String,
+        required: true
     },
 });
 
- const hardChallenges = mongoose.model('hardChallenges' , hardChallengesSchema);
- module.exports = hardChallenges
+const hardChallenges = mongoose.model('hardChallenges', hardChallengesSchema);
+module.exports = hardChallenges

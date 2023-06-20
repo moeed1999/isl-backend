@@ -1,28 +1,32 @@
 const mongoose = require('mongoose');
 
 const easyChallengesSchema = new mongoose.Schema({
-    titleEng :  {
+    titleEng: {
         type: String,
-        required : true
+        required: true
     },
-    titleUrdu :  {
+    titleUrdu: {
         type: String,
-        required : true
+        required: true
     },
-    reference :  {
+    reference: {
         type: String,
-        required : true
+        required: true
     },
-    refUrdu :  {
+    refUrdu: {
         type: String,
-        required : true
+        required: true
     },
-    refEnglish :  {
+    refEnglish: {
         type: String,
-        required : true
+        required: true
+    },
+    date: {
+        type: String,
+        required: true
     },
 
 });
 
- const easyChallenges = mongoose.model('easyChallenges' , easyChallengesSchema);
- module.exports = easyChallenges
+const easyChallenges = mongoose.model('easyChallenges', easyChallengesSchema);
+module.exports = easyChallenges
