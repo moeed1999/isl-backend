@@ -39,6 +39,7 @@ const userLogin = async (req, res) => {
             success: true
         })
     } catch (error) {
+        res?.status(500).send("Internal Server Error");
         console.log(error)
     }
 };
@@ -139,18 +140,30 @@ const addChallengeInUser = async (req,res)=> {
 const userEasyChallenges = async (req, res) => {
     const { _id: userId } = req?.user
 
-    const challenges = await userModel.findOne({ _id: userId }, { _id: 0, easyCompletedChallenges: 1 }).populate('easyCompletedChallenges')
+    try{
+        const challenges = await userModel.findOne({ _id: userId }, { _id: 0, easyCompletedChallenges: 1 }).populate('easyCompletedChallenges')
     
     res.send(challenges)
+    }
+    catch(error){
+        console.log(error)
+        res?.status(500).send("Internal Server Error");
+    }
 
 }
 
 const userHardChallenges = async (req, res) => {
     const { _id: userId } = req?.user
 
-    const challenges = await userModel.findOne({ _id: userId }, { _id: 0, hardCompletedChallenges: 1 }).populate('hardCompletedChallenges')
+    try{
+        const challenges = await userModel.findOne({ _id: userId }, { _id: 0, hardCompletedChallenges: 1 }).populate('hardCompletedChallenges')
     
     res.send(challenges)
+    }
+    catch(error){
+        console.log(error)
+        res?.status(500).send("Internal Server Error");
+    }
 
 }
 

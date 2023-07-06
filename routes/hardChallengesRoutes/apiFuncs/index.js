@@ -5,6 +5,7 @@ const allHardChallenges = async (req, res) => {
         let challenges = await hardChallengesModel.find({})
         res.send(challenges)
     } catch (error) {
+        res?.status(500).send("Internal Server Error");
         console.log(error)
     }
 };
@@ -25,20 +26,38 @@ const createHardChallenge = async (req, res) => {
 }
 
 const getHardChallenge = async (req, res) => {
-    const { _id } = req?.user
+    const {date} = req?.query
     try {
-        let user = await userModel.findOne({ _id })
-        let challenges = await hardChallengesModel.findOne({ _id: { $nin: user?.hardCompletedChallenges } })
+        let challenges = await hardChallengesModel.findOne({date})
         challenges ?
-            res.send(challenges)
-            :
-            res.send('all challenges completed.No more challenges for now.')
+        res.send(challenges)
+        :
+        res.send('No challenge for now.')
     } catch (error) {
+        res?.status(500).send("Internal Server Error");
         console.log(error)
     }
 };
+
+const isHardChallengeCompleted = async (req, res) => {
+    const {_id} = req?.user
+    const {id} = req?.params
+    try {
+        let user = await userModel.findOne({ _id })
+        if(user && user?.hardCompletedChallenges?.includes(id)){
+            res?.send(true)
+        }
+        else{
+            res?.send(false)
+        }
+    } catch (error) {
+        res?.status(500).send("Internal Server Error");
+        console.log(error)
+    }
+}
 module.exports = {
     allHardChallenges,
     createHardChallenge,
-    getHardChallenge
+    getHardChallenge,
+    isHardChallengeCompleted
 }

@@ -5,6 +5,7 @@ const allEasyChallenges = async (req, res) => {
         let challenges = await easyChallengesModel.find({})
         res.send(challenges)
     } catch (error) {
+        res?.status(500).send("Internal Server Error");
         console.log(error)
     }
 };
@@ -26,21 +27,40 @@ const createEasyChallenge = async (req,res) => {
 
 // get one easy challenge
 const getEasyChallenge = async (req, res) => {
-    const {_id} = req?.user
+    const {date} = req?.query
     try {
-        let user =  await userModel.findOne({_id})
-        let challenges = await easyChallengesModel.findOne({_id:{$nin : user?.easyCompletedChallenges}})
+        let challenges = await easyChallengesModel.findOne({date})
         challenges ?
         res.send(challenges)
         :
-        res.send('all challenges completed.No more challenges for now.')
+        res.send('No challenge for now.')
     } catch (error) {
+        res?.status(500).send("Internal Server Error");
         console.log(error)
     }
 };
 
+// checking if challenge is completed or not?
+const isEasyChallengeCompleted = async (req,res) => {
+    const {_id} = req?.user
+    const {id} = req?.params
+    try {
+        let user = await userModel.findOne({ _id })
+        if(user && user?.easyCompletedChallenges?.includes(id)){
+            res?.send(true)
+        }
+        else{
+            res?.send(false)
+        }
+    } catch (error) {
+        res?.status(500).send("Internal Server Error");
+        console.log(error)
+    }
+}
+
 module.exports = {
     allEasyChallenges,
     createEasyChallenge,
-    getEasyChallenge
+    getEasyChallenge,
+    isEasyChallengeCompleted
 }
