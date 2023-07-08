@@ -22,16 +22,16 @@ const userLogin = async (req, res) => {
         let isPasswordMatch = userModel.comparePassword(password, userNameExists.password);
 
         if (!isPasswordMatch)
-        return res.status(500).json({
-            success: false,
-            reason: "Password does not match",
-            message: "You could not be logged in",
-        });
+            return res.status(500).json({
+                success: false,
+                reason: "Password does not match",
+                message: "You could not be logged in",
+            });
 
         //creating token
-        const token = jwt.sign({userName}, process.env.ACCESS_TOKEN_SECRET, {
+        const token = jwt.sign({ userName }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: '7d' // Token expires in 1 month
-          });
+        });
 
         res.send({
             userName: userNameExists.userName,
@@ -51,101 +51,101 @@ const userSignUp = async (req, res) => {
         let password = userModel.encryptPassword(req?.body?.password)
 
         //creating token
-        const token = jwt.sign({...req?.body,password}, process.env.ACCESS_TOKEN_SECRET, {
+        const token = jwt.sign({ ...req?.body, password }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: '7d' // Token expires in 1 month
-          });
+        });
 
         //creating data to save
-        let request = new userModel({...req?.body,password});
+        let request = new userModel({ ...req?.body, password });
 
         //saving data
         let user = await request.save();
 
         //sending data
         res.send({
-            userName:user.userName,
+            userName: user.userName,
             token,
-            success:true
-            });
+            success: true
+        });
 
     } catch (e) {
         res.json({
             error: e.code,
             message: e.message
         });
-        console.log(e,'signup error')
+        console.log(e, 'signup error')
     }
 };
 
-const addChallengeInUser = async (req,res)=> {
-    const {challengeId} = req?.params
-    const {_id:userId} = req?.user
+const addChallengeInUser = async (req, res) => {
+    const { challengeId } = req?.params
+    const { _id: userId } = req?.user
     try {
         // checking if challenge is an easy or hard one
-        let easy = await easyChallengesModel.findOne({_id : challengeId})
-        let hard = await hardChallengesModel.findOne({_id : challengeId})
+        let easy = await easyChallengesModel.findOne({ _id: challengeId })
+        let hard = await hardChallengesModel.findOne({ _id: challengeId })
 
-        if(easy){
+        if (easy) {
             // checking if id already exists
-            const userChallenges = await userModel.findOne({_id :userId},{easyCompletedChallenges:1})
-            const isIdUnique =  userChallenges?.
-                               easyCompletedChallenges?.
-                               some((elem)=>{
-                                return JSON.stringify(elem) == JSON.stringify(challengeId)
-                            })
-            
-            if(!isIdUnique){
-            let request = await userModel.updateOne(
-                {_id:userId},
-                {
-                    $push : {easyCompletedChallenges : challengeId}
-                }
-            ) 
-            res.send(request)
-            }
-            else {res.send('id already exists')}
-        }
-        
-        else if(hard){
-            // checking if id already exists
-            const userChallenges = await userModel.findOne({_id :userId},{hardCompletedChallenges:1})
+            const userChallenges = await userModel.findOne({ _id: userId }, { easyCompletedChallenges: 1 })
             const isIdUnique = userChallenges?.
-                               hardCompletedChallenges?.
-                               some((elem)=>{
-                                return JSON.stringify(elem) == JSON.stringify(challengeId)
-                               })
-                               
-            if(!isIdUnique){
+                easyCompletedChallenges?.
+                some((elem) => {
+                    return JSON.stringify(elem) == JSON.stringify(challengeId)
+                })
+
+            if (!isIdUnique) {
                 let request = await userModel.updateOne(
-                    {_id:userId},
+                    { _id: userId },
                     {
-                        $push : {hardCompletedChallenges : challengeId}
+                        $push: { easyCompletedChallenges: challengeId }
                     }
                 )
                 res.send(request)
             }
-            else{res.send('id already exists')}
+            else { res.send('id already exists') }
         }
-       
+
+        else if (hard) {
+            // checking if id already exists
+            const userChallenges = await userModel.findOne({ _id: userId }, { hardCompletedChallenges: 1 })
+            const isIdUnique = userChallenges?.
+                hardCompletedChallenges?.
+                some((elem) => {
+                    return JSON.stringify(elem) == JSON.stringify(challengeId)
+                })
+
+            if (!isIdUnique) {
+                let request = await userModel.updateOne(
+                    { _id: userId },
+                    {
+                        $push: { hardCompletedChallenges: challengeId }
+                    }
+                )
+                res.send(request)
+            }
+            else { res.send('id already exists') }
+        }
+
         else {
             res.send('please enter a valid id')
         }
 
-        } catch (error) {
-            res.send(error.message)
-            console.log(error)
-        }
+    } catch (error) {
+        res.send(error.message)
+        console.log(error)
+    }
 }
 
 const userEasyChallenges = async (req, res) => {
     const { _id: userId } = req?.user
 
-    try{
+    try {
         const challenges = await userModel.findOne({ _id: userId }, { _id: 0, easyCompletedChallenges: 1 }).populate('easyCompletedChallenges')
-    
-    res.send(challenges)
+
+        res.send(challenges)
     }
-    catch(error){
+    catch (error) {
         console.log(error)
         res?.status(500).send("Internal Server Error");
     }
@@ -155,22 +155,39 @@ const userEasyChallenges = async (req, res) => {
 const userHardChallenges = async (req, res) => {
     const { _id: userId } = req?.user
 
-    try{
+    try {
         const challenges = await userModel.findOne({ _id: userId }, { _id: 0, hardCompletedChallenges: 1 }).populate('hardCompletedChallenges')
-    
-    res.send(challenges)
+
+        res.send(challenges)
     }
-    catch(error){
+    catch (error) {
         console.log(error)
         res?.status(500).send("Internal Server Error");
     }
 
 }
 
+const clearAllChallenges = async (req, res) => {
+    const { _id: userId } = req?.user;
+
+    try {
+        const result = await userModel.updateOne(
+            { _id: userId },
+            { $set: { hardCompletedChallenges: [], easyCompletedChallenges: [] } }
+        );
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+};
+
+
 module.exports = {
     userLogin,
     userSignUp,
     addChallengeInUser,
     userEasyChallenges,
-    userHardChallenges
+    userHardChallenges,
+    clearAllChallenges
 }
