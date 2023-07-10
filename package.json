@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd src && nodemon app.js"
+    "start": "cd src && nodemon app.js",
+    "build": "npm install && lint && test"
   },
   "author": "abdul moeed",
   "license": "ISC",
