@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd src && nodemon app.js",
-    "build": "npm install && lint && test"
+    "build": "npm install"
   },
   "author": "abdul moeed",
   "license": "ISC",
